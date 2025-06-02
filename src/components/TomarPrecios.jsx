@@ -67,7 +67,7 @@ const TomarPrecios = () => {
       Swal.fire("Guardado", "Precio cargado correctamente", "success");
       setDescripcion("");
       setCantidad(1);
-      setTipo("A4");
+      setTipo("Semáforo");
     } catch (error) {
       console.error(error);
       Swal.fire("Error", "No se pudo guardar", "error");

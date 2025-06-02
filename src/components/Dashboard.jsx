@@ -27,6 +27,9 @@ const Dashboard = () => {
         <button className="btn btn-secondary btn-lg" onClick={() => navigate("/agregar")}>
           Agregar producto nuevo
         </button>
+        <button className="btn btn-secondary btn-lg" onClick={() => navigate("/editar")}>
+          Editar Producto
+        </button>
         <button className="btn btn-secondary btn-lg" onClick={() => navigate("/importar")}>
           Cargar Archivo JSON
         </button>

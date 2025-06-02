@@ -8,6 +8,7 @@ import TomarPrecios from "./components/TomarPrecios";
 import VerPrecios from "./components/VerPrecios";
 import ImportarProductos from "./components/ImportarProductos";
 import AgregarProducto from "./components/AgregarProducto";
+import EditarProducto from "./components/EditarProducto";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/ver-precios" element={<VerPrecios />} />
         <Route path="/importar" element={<ImportarProductos />} />
         <Route path="/agregar" element={<AgregarProducto />} />
+        <Route path="/editar" element={<EditarProducto />} />
       </Routes>
     </Router>
   );
