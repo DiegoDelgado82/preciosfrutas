@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { db } from "../firebaseConfig";
 import { collection, setDoc, doc } from "firebase/firestore";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const ImportarProductos = () => {
   const [archivo, setArchivo] = useState(null);
   const [vistaPrevia, setVistaPrevia] = useState([]);
-
+  const navigate = useNavigate();
   const handleArchivo = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -70,8 +71,13 @@ const ImportarProductos = () => {
 
   return (
     <div className="container mt-4">
-      <h4>📦 Importar productos desde archivo JSON</h4>
-
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4>📦 Importar productos desde archivo JSON</h4>
+        <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
+          🏠 Home
+        </button>
+      </div>
+      
       <div className="mb-3">
         <input type="file" accept=".json" className="form-control" onChange={handleArchivo} />
       </div>
