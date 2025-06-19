@@ -30,7 +30,13 @@ const ListaPrecios = () => {
 
     const docRef = doc(db, "precios_faltantes", id);
     await updateDoc(docRef, { cantidad, tipo });
-    Swal.fire("Actualizado", "Registro modificado correctamente", "success");
+    Swal.fire({
+  title: "Actualizado",
+  text: "Registro modificado correctamente",
+  icon: "success",
+  timer: 500,
+  showConfirmButton: false
+});
   };
 
   const handleEliminar = async (id) => {
@@ -54,13 +60,19 @@ const ListaPrecios = () => {
 
     if (confirmar2.isConfirmed) {
       await deleteDoc(doc(db, "precios_faltantes", id));
-      Swal.fire("Eliminado", "Registro borrado", "success");
+      Swal.fire({
+  title: "Eliminado",
+  text: "Registro borrado",
+  icon: "success",
+  timer: 500,
+  showConfirmButton: false
+});
     }
   };
 
   return (
     <div className="mt-5">
-      <h4 className="mb-3">🔎 Precios cargados</h4>
+      <h4 className="mb-3">Precios cargados</h4>
 
       {precios.length === 0 ? (
         <p className="text-muted">No hay precios cargados aún.</p>

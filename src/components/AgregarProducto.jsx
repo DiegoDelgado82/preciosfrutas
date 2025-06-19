@@ -38,7 +38,7 @@ const AgregarProducto = () => {
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>➕ Agregar producto nuevo</h4>
+        <h4>Agregar producto nuevo</h4>
         <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
           🏠 Home
         </button>
@@ -80,7 +80,7 @@ const AgregarProducto = () => {
         </div>
 
         <button type="submit" className="btn btn-primary">
-          💾 Guardar producto
+          Guardar producto
         </button>
       </form>
     </div>

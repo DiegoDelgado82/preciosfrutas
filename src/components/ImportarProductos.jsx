@@ -72,7 +72,7 @@ const ImportarProductos = () => {
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4>📦 Importar productos desde archivo JSON</h4>
+        <h4>Importar productos desde archivo JSON</h4>
         <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
           🏠 Home
         </button>

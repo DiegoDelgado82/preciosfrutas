@@ -64,7 +64,7 @@ const TomarPrecios = () => {
         ean: producto.ean
       });
 
-      Swal.fire("Guardado", "Precio cargado correctamente", "success");
+      
       setDescripcion("");
       setCantidad(1);
       setTipo("Semáforo");

@@ -23,41 +23,42 @@ const VerPrecios = () => {
   };
 
   const handleEliminarTodos = async () => {
-    const confirm1 = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Se eliminarán todos los precios cargados.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, continuar",
-    });
+  const confirm = await Swal.fire({
+    title: "¿Estás seguro?",
+    text: "Se eliminarán todos los precios cargados.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar"
+  });
 
-    if (!confirm1.isConfirmed) return;
+  if (!confirm.isConfirmed) return;
 
-    const confirm2 = await Swal.fire({
-      title: "¿Eliminar definitivamente?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "error",
-      showCancelButton: true,
-      confirmButtonText: "Eliminar todo",
-    });
+  const querySnapshot = await getDocs(collection(db, "precios_faltantes"));
+  const batchDeletes = querySnapshot.docs.map((docItem) =>
+    deleteDoc(doc(db, "precios_faltantes", docItem.id))
+  );
 
-    if (!confirm2.isConfirmed) return;
+  await Promise.all(batchDeletes);
 
-    const querySnapshot = await getDocs(collection(db, "precios_faltantes"));
-    const batchDeletes = querySnapshot.docs.map((docItem) =>
-      deleteDoc(doc(db, "precios_faltantes", docItem.id))
-    );
+  Swal.fire({
+    title: "Eliminado",
+    text: "Todos los precios fueron borrados",
+    icon: "success",
+    timer: 500,
+    showConfirmButton: false
+  });
 
-    await Promise.all(batchDeletes);
-    Swal.fire("Eliminado", "Todos los precios fueron borrados", "success");
-    setPrecios([]);
-  };
+  setPrecios([]);
+};
+
 
   const handleDescargarExcel = () => {
     const data = precios.map((p) => ({
       EAN: p.ean,
       CANTIDAD: p.cantidad,
       DESCRIPCION: p.descripcion,
+      TIPO: p.tipo,
       NUMERO: p.nro,
     }));
 
@@ -71,7 +72,7 @@ const VerPrecios = () => {
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>🧾 Precios tomados</h3>
+        <h3>Precios tomados</h3>
         <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
           🏠 Home
         </button>
