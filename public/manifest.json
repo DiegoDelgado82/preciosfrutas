@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Precios 3.0",
+  "name": "App para tomar precios sin código de barras",
   "icons": [
     {
       "src": "favicon.ico",
