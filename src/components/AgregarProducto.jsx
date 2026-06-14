@@ -12,16 +12,18 @@ const AgregarProducto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const eanSinEspacios = ean.replace(/\s+/g, "");
+    const descripcionMayuscula = descripcion.trim().toUpperCase();
 
-    if (!ean || !descripcion || !nro) {
+    if (!eanSinEspacios || !descripcionMayuscula || !nro) {
       Swal.fire("Error", "Todos los campos son obligatorios", "warning");
       return;
     }
 
     try {
-      await setDoc(doc(db, "productos", ean), {
-        ean,
-        descripcion,
+      await setDoc(doc(db, "productos", eanSinEspacios), {
+        ean: eanSinEspacios,
+        descripcion: descripcionMayuscula,
         nro: parseInt(nro),
       });
 
@@ -51,7 +53,7 @@ const AgregarProducto = () => {
             type="text"
             className="form-control"
             value={ean}
-            onChange={(e) => setEan(e.target.value)}
+            onChange={(e) => setEan(e.target.value.replace(/\s+/g, ""))}
             required
           />
         </div>
@@ -62,7 +64,7 @@ const AgregarProducto = () => {
             type="text"
             className="form-control"
             value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            onChange={(e) => setDescripcion(e.target.value.toUpperCase())}
             required
           />
         </div>

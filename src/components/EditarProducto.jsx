@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
@@ -11,51 +11,100 @@ const EditarProducto = () => {
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const navigate = useNavigate();
 
-  // Traer todos los productos una vez
   useEffect(() => {
     const obtenerProductos = async () => {
       const snapshot = await getDocs(collection(db, "productos"));
-      const lista = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const lista = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
       setProductos(lista);
     };
 
     obtenerProductos();
   }, []);
 
-  // Filtrar sugerencias en base a la búsqueda
   useEffect(() => {
     if (buscar.trim() === "") {
       setSugerencias([]);
-    } else {
-      const filtro = productos.filter(p =>
-        p.descripcion.toLowerCase().includes(buscar.toLowerCase())
-      );
-      setSugerencias(filtro.slice(0, 5));
+      return;
     }
+
+    const busqueda = buscar.toLowerCase();
+    const filtro = productos.filter((p) => {
+      const descripcion = (p.descripcion || "").toLowerCase();
+      const ean = (p.ean || p.id || "").toLowerCase();
+      const nro = String(p.nro || "").toLowerCase();
+      return descripcion.includes(busqueda) || ean.includes(busqueda) || nro.includes(busqueda);
+    });
+    setSugerencias(filtro.slice(0, 5));
   }, [buscar, productos]);
 
   const seleccionarProducto = (producto) => {
-    setProductoSeleccionado(producto);
-    setBuscar(producto.descripcion);
+    setProductoSeleccionado({
+      ...producto,
+      ean: producto.ean || producto.id,
+      eanOriginal: producto.id
+    });
+    setBuscar(producto.descripcion || "");
     setSugerencias([]);
+  };
+
+  const actualizarCampo = (campo, valor) => {
+    const valorActualizado =
+      campo === "descripcion" ? valor.toUpperCase() : campo === "ean" ? valor.replace(/\s+/g, "") : valor;
+
+    setProductoSeleccionado((producto) => ({
+      ...producto,
+      [campo]: valorActualizado
+    }));
   };
 
   const guardarCambios = async () => {
     if (!productoSeleccionado) return;
 
+    const ean = String(productoSeleccionado.ean || "").replace(/\s+/g, "");
+    const descripcion = String(productoSeleccionado.descripcion || "").trim().toUpperCase();
+    const nro = parseInt(productoSeleccionado.nro, 10);
+    const eanOriginal = productoSeleccionado.eanOriginal || productoSeleccionado.id;
+
+    if (!ean || !descripcion || Number.isNaN(nro)) {
+      Swal.fire("Error", "EAN, descripcion y nro son obligatorios", "warning");
+      return;
+    }
+
+    if (ean !== eanOriginal && productos.some((p) => p.id === ean || p.ean === ean)) {
+      Swal.fire("Error", "Ya existe un producto con ese EAN", "warning");
+      return;
+    }
+
+    const datosActualizados = {
+      ean,
+      descripcion,
+      nro
+    };
+
     try {
-      await updateDoc(doc(db, "productos", productoSeleccionado.id), {
-        descripcion: productoSeleccionado.descripcion,
-        nro: parseInt(productoSeleccionado.nro)
-      });
+      if (ean === eanOriginal) {
+        await updateDoc(doc(db, "productos", eanOriginal), datosActualizados);
+      } else {
+        await setDoc(doc(db, "productos", ean), datosActualizados);
+        await deleteDoc(doc(db, "productos", eanOriginal));
+      }
+
+      setProductos((prev) =>
+        prev
+          .filter((p) => p.id !== eanOriginal)
+          .concat({ id: ean, ...datosActualizados })
+      );
 
       Swal.fire({
-  icon: "success",
-  title: "Guardado",
-  text: "Producto actualizado correctamente",
-  timer: 1000,
-  showConfirmButton: false
-});
+        icon: "success",
+        title: "Guardado",
+        text: "Producto actualizado correctamente",
+        timer: 1000,
+        showConfirmButton: false
+      });
       setBuscar("");
       setProductoSeleccionado(null);
     } catch (error) {
@@ -69,7 +118,7 @@ const EditarProducto = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>Editar producto</h4>
         <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
-          🏠 Home
+          Home
         </button>
       </div>
 
@@ -94,7 +143,7 @@ const EditarProducto = () => {
                 onClick={() => seleccionarProducto(p)}
                 style={{ cursor: "pointer" }}
               >
-                <strong>{p.ean}</strong> - {p.descripcion}
+                <strong>{p.ean || p.id}</strong> - {p.descripcion}
               </li>
             ))}
           </ul>
@@ -104,14 +153,22 @@ const EditarProducto = () => {
       {productoSeleccionado && (
         <div className="mt-4">
           <div className="mb-3">
-            <label className="form-label">Descripción</label>
+            <label className="form-label">EAN</label>
+            <input
+              type="text"
+              className="form-control"
+              value={productoSeleccionado.ean}
+              onChange={(e) => actualizarCampo("ean", e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Descripcion</label>
             <input
               type="text"
               className="form-control"
               value={productoSeleccionado.descripcion}
-              onChange={(e) =>
-                setProductoSeleccionado({ ...productoSeleccionado, descripcion: e.target.value })
-              }
+              onChange={(e) => actualizarCampo("descripcion", e.target.value)}
             />
           </div>
 
@@ -121,14 +178,12 @@ const EditarProducto = () => {
               type="number"
               className="form-control"
               value={productoSeleccionado.nro}
-              onChange={(e) =>
-                setProductoSeleccionado({ ...productoSeleccionado, nro: e.target.value })
-              }
+              onChange={(e) => actualizarCampo("nro", e.target.value)}
             />
           </div>
 
           <button className="btn btn-success" onClick={guardarCambios}>
-            💾 Guardar cambios
+            Guardar cambios
           </button>
         </div>
       )}

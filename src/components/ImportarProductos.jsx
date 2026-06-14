@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { db } from "../firebaseConfig";
-import { collection, setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
@@ -49,13 +49,16 @@ const ImportarProductos = () => {
       try {
         const contenido = JSON.parse(event.target.result);
 
-        const promises = contenido.map((prod) =>
-          setDoc(doc(db, "productos", prod.ean), {
-            ean: prod.ean,
-            descripcion: prod.descripcion,
+        const promises = contenido.map((prod) => {
+          const ean = String(prod.ean || "").replace(/\s+/g, "");
+          const descripcion = String(prod.descripcion || "").trim().toUpperCase();
+
+          return setDoc(doc(db, "productos", ean), {
+            ean,
+            descripcion,
             nro: prod.nro
-          })
-        );
+          });
+        });
 
         await Promise.all(promises);
         Swal.fire("¡Cargado!", "Los productos fueron subidos exitosamente.", "success");

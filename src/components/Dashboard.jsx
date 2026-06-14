@@ -16,6 +16,7 @@ const Dashboard = () => {
       </div>
 
       <h2 className="mb-4">Precios Frutas 3.0</h2>
+      
 
       <div className="d-grid gap-3 col-6 mx-auto">
         <button className="btn btn-primary btn-lg" onClick={() => navigate("/tomar-precios")}>
@@ -29,6 +30,9 @@ const Dashboard = () => {
         </button>
         <button className="btn btn-secondary btn-lg" onClick={() => navigate("/editar")}>
           Editar Producto
+        </button>
+        <button className="btn btn-secondary btn-lg" onClick={() => navigate("/consultar-producto")}>
+          Consultar producto
         </button>
         <button className="btn btn-secondary btn-lg" onClick={() => navigate("/importar")}>
           Cargar Archivo JSON
