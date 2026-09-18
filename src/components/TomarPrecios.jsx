@@ -94,58 +94,60 @@ const TomarPrecios = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h3 className="mb-0">Precios faltantes</h3>
-         </div>
+    <main className="price-entry-page container">
+      <header className="price-entry-header d-flex justify-content-between align-items-center">
+        <h3 className="mb-0">Precios faltantes</h3>
 
-        <button className="btn btn-outline-dark" onClick={() => navigate("/")}>
+        <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => navigate("/")}>
           Home
         </button>
-      </div>
+      </header>
 
-      <form onSubmit={handleSubmit} className="row g-3">
-        <div className="col-md-5">
+      <form onSubmit={handleSubmit} className="price-entry-form">
+        <div>
+          <label className="visually-hidden" htmlFor="descripcion">Descripción</label>
           <input
             id="descripcion"
             type="text"
             className="form-control"
-            placeholder="Descripcion del producto"
+            placeholder="Descripción del producto"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value.toUpperCase())}
             autoComplete="off"
           />
         </div>
 
-        <div className="col-md-2">
-          <input
-            type="number"
-            className="form-control"
-            min="1"
-            value={cantidad}
-            onChange={(e) => setCantidad(parseInt(e.target.value || "1", 10))}
-          />
+        <div className="price-entry-details">
+          <div>
+            <label className="form-label" htmlFor="cantidad">Cantidad</label>
+            <input
+              id="cantidad"
+              type="number"
+              className="form-control"
+              min="1"
+              value={cantidad}
+              onChange={(e) => setCantidad(parseInt(e.target.value || "1", 10))}
+            />
+          </div>
+
+          <div>
+            <label className="form-label" htmlFor="tipo">Tipo</label>
+            <select id="tipo" className="form-select" value={tipo} onChange={(e) => setTipo(e.target.value)}>
+              <option value="Semáforo">Semáforo</option>
+              <option value="A4">A4</option>
+              <option value="Imágen">Imágen</option>
+              <option value="Peroquet">Peroquet</option>
+            </select>
+          </div>
         </div>
 
-        <div className="col-md-3">
-          <select className="form-select" value={tipo} onChange={(e) => setTipo(e.target.value)}>
-            <option value="Semáforo">Semáforo</option>
-            <option value="A4">A4</option>
-            <option value="Imágen">Imágen</option>
-            <option value="Peroquet">Peroquet</option>
-          </select>
-        </div>
-
-        <div className="col-md-2">
-          <button type="submit" className="btn btn-primary w-100">
-            Agregar
-          </button>
-        </div>
+        <button type="submit" className="btn btn-primary w-100">
+          Agregar
+        </button>
       </form>
 
       <ListaPrecios sucursal={SUCURSAL_NRO} />
-    </div>
+    </main>
   );
 };
 
